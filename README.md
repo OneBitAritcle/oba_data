@@ -10,11 +10,12 @@
 
 OBA 데이터 파이프라인은 다음을 목표로 합니다:
 
-- **Kafka 기반**으로 사용자/시스템 로그를 실시간 수집
-- 수집된 데이터는 **Spark 또는 Python**으로 전처리
-- 전처리된 데이터는 **PostgreSQL/RDS**와 **S3**에 저장
-- **Airflow DAG**을 통해 수집 → 처리 → 저장을 자동화
+- 사용자에게 제공할 뉴스 기사 선별 후 크롤링
+- 수집된 데이터는 **Python**으로 전처리
+- 전처리된 데이터는 **PostgreSQL/RDS**에 저장
+- 사용자/시스템 로그를 수집하여 DataBase에 저장 및 분석
 - 시각화 도구(**Metabase, Kibana**)를 통해 운영 지표 및 로그 분석
+- **Airflow DAG**을 통해 수집 → 처리 → 저장을 자동화
 
 ---
 
@@ -24,7 +25,7 @@ OBA 데이터 파이프라인은 다음을 목표로 합니다:
    - News API or 웹 크롤러를 통한 기사 수집 (하루 5건 이상)
    - 제목, 본문, 카테고리 등 메타 데이터 포함
 
-2. **Kafka 기반 실시간 로그 수집**
+2. **(논의필요) 실시간 로그 수집** 
    - Kafka Producer (백엔드) → Kafka Cluster → Kafka Consumer (Python)
 
 3. **데이터 정제 및 전처리**
@@ -83,8 +84,8 @@ Metabase / Kibana
 
 | 범주 | 기술 |
 |------|------|
-| **데이터 수집** | Kafka (Producer/Consumer), NewsAPI, 크롤링 |
-| **전처리** | Pandas, Apache Spark |
+| **데이터 수집** | NewsAPI, 크롤링 |
+| **전처리** | Python (Pandas) |
 | **저장소** | PostgreSQL (RDS), AWS S3, Redis |
 | **자동화** | Apache Airflow (DAG 기반) |
 | **운영환경** | Docker, Docker Compose |
