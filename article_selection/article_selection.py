@@ -1,0 +1,26 @@
+"""
+해당 파일은 '사용자에게 제공할 5개의 기사를 선정하는 로직'이며 다음과 같은 작업을 수행한다.
+1. 실행 시점 기준 오늘 이전 기사들 중 아직 사용자에게 제공되지 않은 기사들을 데이터베이스에서 불러온다.
+2. 실행 시점 기준 오늘 크롤링해온 기사와, 1에서 불러온 기사 목록을 합쳐서 중복된 횟수를 센다.
+3. 중복된 횟수가 많은 순서대로 정렬한다.
+4. 중복수가 많은 기사부터 순차적으로 5개를 사용자에게 제공한다.
+    4-1. 만약, 동일한 중복수가 다수 존재한다면 더 최근 기사를 제공한다.
+    4-2. 만약, 기사의 날짜도 동일하다면 .... (더 많은 카테고리를 포함한 기사를 선택한다?)
+"""
+
+import mysql.connector
+from collections import Counter
+from datetime import datetime
+from typing import List, Dict, Any
+
+# 데이터베이스 설정
+## Airflow의 Variable이나 외부 파일로 관리될 수 있음
+DB_CONFIG = {
+    'user': 'your_user',
+    'password': 'your_password',
+    'host': 'your_host',
+    'database': 'your_database'
+}
+
+
+def fetch_unseen_articles(db_config, Dict[str, str], user_id: int) 
