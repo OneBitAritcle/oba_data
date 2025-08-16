@@ -22,5 +22,47 @@ DB_CONFIG = {
     'database': 'your_database'
 }
 
+# ======= 1. 사용자에게 제공되지 않은 기사 불러오기 ======
+def fetch_unseen_articles(db_config, table_name):
+    """
+    Parameters
+    - db_config: 접근할 데이터베이스 정보
+    - table_name: 데이터베이스 내의 불러올 테이블 명 정의
+    """ 
+    conn = None
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
 
-def fetch_unseen_articles(db_config, Dict[str, str], user_id: int) 
+        # 데이터베이스 PK 확실히 해야함
+        query = f"""
+        SELECT tb.order, tb.URL, tb.crawlingtime, tb.category
+        FROM {table_name} as tb
+        """
+
+        cursor.execute(query)
+        previous_articles = cursor.fetchall()
+        print(f"DEBUG: 미제공 기사 수: {len(previous_articles)}")
+
+        return previous_articles
+    
+    except mysql.connector.Error as err:
+        print(f"데이터베이스 조회 오류: {err}")
+        return []
+    
+    finally:
+        if conn and conn.is_connected():
+            cursor.close()
+            conn.close()
+
+
+# ======= 2. 모든 기사를 합친 후 중복 횟수를 세는 함수 ======
+def count_article_duplicates(previous_articles, new_articles):
+    """
+    Parameters
+    - previous_articles: 함수 실행 시점 오늘 이전 크롤링해온 기사 중 사용자에게 제공되지 않은 기사 목록
+    - new_articles: 함수 실행 시점 오늘 크롤링해온 기사 목록
+    """
+    all_articles = previous_articles + new_articles
+
+    
