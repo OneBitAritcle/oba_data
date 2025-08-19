@@ -2,10 +2,10 @@ import mysql.connector
 
 # MySQL 연결 설정
 connect_info = {
-    'host': 'mydbinstance.cb4iuuq0kuoa.ap-southeast-2.rds.amazonaws.com',
+    'host': '####',
     'database': 'oba_article',
-    'user': 'admin',
-    'password': 'obaoba12',
+    'user': '####',
+    'password': '#####',
     'port': 3306  # 기본 포트
 }
 def get_top_5_most_duplicated_articles(today_crawled_links):
