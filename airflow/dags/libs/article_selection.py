@@ -1,7 +1,7 @@
 # article_selection.py (simple)
 import mysql.connector
 
-# --- 테이블 보장 (팀원 스키마 그대로) ---
+# 테이블 없으면 만들기
 def _ensure_tables(conn):
     cur = conn.cursor()
     cur.execute("""
@@ -40,7 +40,7 @@ def upsert_today_links(conn, links):
     오늘 긁은 링크들을 DB에 반영.
     - 이미 있는 URL  : dup_count 증가 + 최신 메타 갱신
     - 처음 보는 URL  : 신규 INSERT (dup_count = 1)
-    주의: 'id' 없는 행은 스킵(로그만 출력)  ← 해시/생성 없음 (팀원 스타일 유지)
+    - 'id' 없는 행은 스킵(로그만 출력)
     """
     cur = conn.cursor()
 
