@@ -20,7 +20,7 @@ HEADERS = {
     )
 }
 
-def get_articles_from_categories(categories):
+def get_articles_from_categories():
     """
     Parameter
     - categories: 추출하려는 기사 카테고리들이 담긴 리스트 (List[str])
@@ -29,11 +29,34 @@ def get_articles_from_categories(categories):
     - all_articles: 모든 카테고리에 해당하는 기사 정보를 담은 딕셔너리의 리스트
     """
     
+    categories = {'artificial-intelligence':'01',
+                  'generative-ai':'02',
+                  'cloud-computing':'03',
+                  'computers-and-peripherals':'04',
+                  'data-center':'05',
+                  'emerging-technology':'06',
+                  'augmented-reality':'07',
+                  'enterprise-applications':'08',
+                  'it-leadership':'09',
+                  'it-management':'10',
+                  'mobile':'11',
+                  'networking':'12',
+                  'android':'13',
+                  'windows':'14',
+                  'productivity-software':'15',
+                  'collaboration-software':'16',
+                  'security':'17',
+                  'software-development':'18',
+                  'vendors-and-providers':'19',
+                  'apple':'20'
+                }
+    
     all_articles = []  # 모든 결과를 통합할 빈 리스트
+    crawling_day = datetime.now().strftime('%Y%m%d')
     crawling_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # 수집 시간은 작업 시작 시 한 번만 기록
 
     # 전달받은 카테고리 리스트를 순회
-    for category in categories:
+    for category in categories.key():
         # 진행 상황을 알 수 있도록 현재 크롤링 중인 카테고리 출력
         print(f"'{category}' 카테고리에서 기사 링크를 수집 중입니다...")
         
@@ -53,7 +76,9 @@ def get_articles_from_categories(categories):
             
             # 해당 카테고리에서 찾은 링크들을 순회하며 데이터 조합
             for i, link_url in enumerate(links):
+                article_id = f'{crawling_day}{categories[category]}{str(i+1).zfill(2)}'
                 article_data = {
+                    'id': int(article_id), # ex) 2508220113
                     'crawling_time': crawling_time,
                     'category': category,
                     'article_order': i + 1,

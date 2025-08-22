@@ -18,8 +18,6 @@ CRAWLER_MODULE_PATH = os.environ.get(
     str(Path(__file__).resolve().parent / "libs" / "crawler.py"),
 )
 
-DEFAULT_CATEGORIES = ["artificial-intelligence", "generative-ai"]
-
 MYSQL_CONFIG = {
     "host": os.environ.get("MYSQL_HOST", "localhost"),
     "user": os.environ.get("MYSQL_USER", "user"),
@@ -51,9 +49,8 @@ def init_schema_task(): # DB 초기화 -> 없으면 생성, 있으면 기존 테
         conn.close()
 
 def crawl_links_task(**context):    # 카테고리별로 크롤링
-    categories = context["params"].get("categories", DEFAULT_CATEGORIES)
     get_articles = _load_func_from_py(CRAWLER_MODULE_PATH, "get_articles_from_categories")
-    links = get_articles(categories)
+    links = get_articles()
     return links
 
 def upsert_task(**context):     # 신규 URL 삽입 테스크
@@ -111,7 +108,6 @@ with DAG(
     t1 = PythonOperator(
         task_id="crawl_links",
         python_callable=crawl_links_task,
-        params={"categories": DEFAULT_CATEGORIES},
     )
 
     t2 = PythonOperator(
