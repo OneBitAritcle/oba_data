@@ -60,8 +60,7 @@ def upsert_today_links(conn, links):
         """, rows)
         conn.commit()
 
-    # 조인해서 url이 같을때?
-    # order 더하기, cnt 더하기
+    # 1. url이 같은 기사(중복기사) 데이터 처리
     cur.execute("""UPDATE article_links AS a
         JOIN (
         SELECT
@@ -74,7 +73,21 @@ def upsert_today_links(conn, links):
         SET
         a.dup_count     = a.dup_count + t.cnt,
         a.article_order = a.article_order + t.sum_order
-        """)
+        """)    
+    conn.commit()
+
+    # 2. 신규 기사 데이터 삽입
+    cur.execute("""INSERT INTO article_links (id, crawling_time, category, article_order, url)
+                SELECT 
+                    t.id,
+                    t.crawling_time,
+                    t.category,
+                    t.article_order,
+                    t.url
+                FROM today_article t
+                LEFT JOIN article_links a ON t.url = a.url
+                WHERE a.url IS NULL
+                """)
     conn.commit()
 
     # 오늘 테이블 비우기
