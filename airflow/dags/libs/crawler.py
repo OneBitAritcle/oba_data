@@ -20,6 +20,27 @@ HEADERS = {
     )
 }
 
+### 해당 코드는 계속 새롭게 연산될 필요가 없기 때문에 주석 처리 후 단순 리스트로 저장
+# def weighted_order(article_num, p=2):
+#     """
+#     기사 크롤링 순위 1번부터 15번까지의 거듭제곱 방식 가중치 계산 리스트 제작
+#     ---------------------------------------------------------
+#     Parameter
+#     - article_num: 추출받아온 기사의 개수
+#     - p: 거듭제곱 지수, 기본값은 2
+
+#     Return
+#     - weighted_list: 거듭제곱 방식으로 계산한 가중치 리스트 전체
+#     """
+#     weighted_list = []
+
+#     for i in range(1, article_num+1):
+#         weight = round((16 - i) ** p * 0.1, 2)
+#         weighted_list.append(weight)
+        
+#     return weighted_list
+
+
 def get_articles_from_categories(categories):
     """
     Parameter
@@ -28,7 +49,7 @@ def get_articles_from_categories(categories):
     Return
     - all_articles: 모든 카테고리에 해당하는 기사 정보를 담은 딕셔너리의 리스트
     """
-    
+    weighted_list = [22.5, 19.6, 16.9, 14.4, 12.1, 10.0, 8.1, 6.4, 4.9, 3.6, 2.5, 1.6, 0.9, 0.4, 0.1]
     all_articles = []  # 모든 결과를 통합할 빈 리스트
     crawling_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # 수집 시간은 작업 시작 시 한 번만 기록
 
@@ -56,7 +77,7 @@ def get_articles_from_categories(categories):
                 article_data = {
                     'crawling_time': crawling_time,
                     'category': category,
-                    'article_order': i + 1,
+                    'article_order': weighted_list[i],
                     'url': link_url
                 }
                 # 개별 기사 정보를 최종 결과 리스트에 추가
