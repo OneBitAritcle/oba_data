@@ -44,21 +44,10 @@ def upsert_today_links(conn, links):
     """
     cur = conn.cursor()
 
-    # 임시 테이블 생성
-    cur.execute("""
-        CREATE TEMPORARY TABLE IF NOT EXISTS today_crawled_temp (
-            id BIGINT NOT NULL,
-            crawling_time DATETIME NOT NULL,
-            category VARCHAR(100) NOT NULL,
-            article_order INT NOT NULL,
-            url TEXT NOT NULL
-        ) ENGINE=InnoDB;
-    """)
-
     rows = []
     skipped = 0
     for row in links or []:
-        # id를 크롤러가 넣어준다고 가정
+        # id를 크롤러가 넣어준다고 가정 > 아니야!!! 이제 있어!!!!
         if not all(k in row for k in ("id", "crawling_time", "category", "article_order", "url")):
             skipped += 1
             continue
@@ -66,63 +55,44 @@ def upsert_today_links(conn, links):
 
     if rows:
         cur.executemany("""
-            INSERT INTO today_crawled_temp (id, crawling_time, category, article_order, url)
+            INSERT INTO today_article (id, crawling_time, category, article_order, url)
             VALUES (%s, %s, %s, %s, %s)
         """, rows)
         conn.commit()
 
-        #  임시 테이블을 한 번만 읽도록 중간 결과를 물리화 (MySQL 1137 회피)
-        # url별 최신 값만 추출 -> new_urls
-        cur.execute("DROP TEMPORARY TABLE IF EXISTS new_urls;")
-        cur.execute("""
-            CREATE TEMPORARY TABLE new_urls AS
-            SELECT
-              MIN(id) AS id,
-              MAX(crawling_time) AS crawling_time,
-              SUBSTRING_INDEX(GROUP_CONCAT(category ORDER BY crawling_time DESC), ',', 1) AS category,
-              SUBSTRING_INDEX(GROUP_CONCAT(article_order ORDER BY crawling_time DESC), ',', 1) AS article_order,
-              url
-            FROM today_crawled_temp
-            GROUP BY url;
-        """)
+    # 1. url이 같은 기사(중복기사) 데이터 처리
+    cur.execute("""UPDATE article_links AS a
+        JOIN (
+        SELECT
+            url,
+            COUNT(*)            AS cnt,        -- 중복 개수
+            COALESCE(SUM(article_order), 0) AS sum_order
+        FROM today_article
+        GROUP BY url
+        ) AS t ON a.url = t.url
+        SET
+        a.dup_count     = a.dup_count + t.cnt,
+        a.article_order = a.article_order + t.sum_order
+        """)    
+    conn.commit()
 
-        # url별 오늘 등장 횟수 -> counts
-        cur.execute("DROP TEMPORARY TABLE IF EXISTS counts;")
-        cur.execute("""
-            CREATE TEMPORARY TABLE counts AS
-            SELECT url, COUNT(*) AS today_count
-            FROM today_crawled_temp
-            GROUP BY url;
-        """)
-        conn.commit()
+    # 2. 신규 기사 데이터 삽입
+    cur.execute("""INSERT INTO article_links (id, crawling_time, category, article_order, url)
+                SELECT 
+                    t.id,
+                    t.crawling_time,
+                    t.category,
+                    t.article_order,
+                    t.url
+                FROM today_article t
+                LEFT JOIN article_links a ON t.url = a.url
+                WHERE a.url IS NULL
+                """)
+    conn.commit()
 
-        # 1) 기존 URL 업데이트
-        cur.execute("""
-            UPDATE article_links a
-            JOIN new_urls n ON a.url = n.url
-            LEFT JOIN counts c ON a.url = c.url
-            SET a.dup_count = a.dup_count + COALESCE(c.today_count, 0),
-                a.crawling_time = n.crawling_time,
-                a.category = n.category,
-                a.article_order = n.article_order;
-        """)
-        conn.commit()
-
-        # 2) 신규 URL 삽입: dup_count = 1 
-        cur.execute("""
-            INSERT INTO article_links (id, crawling_time, category, article_order, url, dup_count, is_used)
-            SELECT n.id, n.crawling_time, n.category, n.article_order, n.url, 1, 0
-            FROM new_urls n
-            LEFT JOIN article_links a ON a.url = n.url
-            WHERE a.url IS NULL;
-        """)
-        conn.commit()
-
-        # 임시 테이블 정리
-        cur.execute("DROP TEMPORARY TABLE IF EXISTS new_urls;")
-        cur.execute("DROP TEMPORARY TABLE IF EXISTS counts;")
-        cur.execute("DROP TEMPORARY TABLE IF EXISTS today_crawled_temp;")
-        conn.commit()
+    # 오늘 테이블 비우기
+    cur.execute("TRUNCATE TABLE today_article;")
+    conn.commit()
 
     if skipped:
         print(f"[upsert_today_links] skipped rows (missing id or fields): {skipped}")
