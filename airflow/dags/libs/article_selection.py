@@ -78,28 +78,37 @@ def upsert_today_links(conn, links):
     conn.commit()
     
     ## updated but not tested yet
-    # # 1. url이 같은 기사(중복기사) 데이터 처리
-    # cur.execute("""UPDATE article_links AS a
-    #     -- today_article 테이블에서 집계 데이터를 가져오기 위해 JOIN
-    #     JOIN (
+    # 1. 중복 기사 데이터 처리 (dup_count, article_order, category 한번에 업데이트)
+    # cur.execute("""
+    # UPDATE article_links AS a
+    # -- today_article 테이블에서 집계 데이터를 가져오기 위해 JOIN
+    # JOIN (
     #     SELECT
-    #         url,
-    #         COUNT(*)            AS cnt,        -- 중복 개수
-    #         COALESCE(SUM(article_order), 0) AS sum_order,
-    #     -- url로 그룹화하여 a.category에 존재하지 않는 category만 추가
-    #     (SELECT GROUP_CONTCAT(DISTINCT ta.category)
-    #      FROM today_article as ta
-    #      WHERE ta.url = t.url AND NOT FINT_INSET(ta.category, (SELECT category FROM article_links al WHERE al.url = ta.url))
-    #      ) AS new_category
-    #
-    #     FROM today_article as t
-    #     GROUP BY url
-    #     ) AS t ON a.url = t.url
-    #     SET
-    #     a.dup_count     = a.dup_count + t.cnt,
-    #     a.article_order = a.article_order + t.sum_order
-    #     a.category = IF(t.new_category IS NOT NULL, CONCAT_WS(', ', a.category, t.new_category), a.category);
-    #       
+    #         t.url,
+    #         COUNT(*) AS cnt, -- 중복 개수
+    #         COALESCE(SUM(t.article_order), 0) AS sum_order,
+    #         -- url별로 그룹화 -> a.category에 존재하지 않는 새로운 카테고리들만 추가
+    #         -- 서브쿼리로 현재 article_links의 카테고리와 비교
+    #         (
+    #             SELECT
+    #                 GROUP_CONCAT(DISTINCT ta.category)
+    #             FROM
+    #                 today_article AS ta
+    #             WHERE
+    #                 ta.url = t.url
+    #                 AND NOT FIND_IN_SET(ta.category, (SELECT category FROM article_links al WHERE al.url = ta.url))
+    #         ) AS new_categories
+    #     FROM
+    #         today_article AS t
+    #     GROUP BY
+    #         t.url
+    # ) AS t ON a.url = t.url
+    # SET
+    #     a.dup_count = a.dup_count + t.cnt,
+    #     a.article_order = a.article_order + t.sum_order,
+    #     -- new_categories가 NULL이 아닐 경우에만 기존 카테고리 뒤에 쉼표로 연결
+    #     a.category = IF(t.new_categories IS NOT NULL, CONCAT_WS(',', a.category, t.new_categories), a.category);
+    # """)
     # conn.commit()
 
     # 2. 신규 기사 데이터 삽입
