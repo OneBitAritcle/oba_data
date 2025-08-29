@@ -8,7 +8,7 @@
 
 ## 🔍 관련 이슈
 <!-- Jira 발행 티겟을 입력해주세요. -->
-- #이슈번호
+- [ON-02](https://yuwolxx.atlassian.net/browse/ON-2?atlOrigin=eyJpIjoiNWJmYWU5MzM1MGUxNDAyYjkyZDY4NjdmYjk1MDI4YjIiLCJwIjoiaiJ9)
 
 ## 🙏 To Reviewers
 <!-- 코드 이해를 위해 참고할 수 있는 자료나 팀원에게 전달할 내용 입력해주세요. -->
