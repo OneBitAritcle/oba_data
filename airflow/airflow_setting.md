@@ -12,7 +12,7 @@
 - [Airflow 2.9.3 PyPI](https://pypi.org/project/apache-airflow/2.9.3/)
 
 ## 📝 개인 학습 자료
-- [Airflow 학습 자료 (Notion)](https://www.notion.so/Airflow-new-25ea97372b2080cc9f3ac9baa6c5ff3b?source=copy_link)
+- [Airflow 학습 자료 (Notion)](https://www.notion.so/Airflow-25ea97372b2080c2bd1ed7318c042b03?source=copy_link)
 
 
 ## 1. 가상환경 생성 및 활성화
