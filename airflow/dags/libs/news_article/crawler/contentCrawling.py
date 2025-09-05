@@ -102,7 +102,7 @@ def build_content_df(urls):
             rows.append(get_content(u))
         except Exception as e:
             print(f"{u} -> {e}")
-            pass
+            raise
     return pd.DataFrame(
         rows, 
         columns=["url","title","tags","publish_time","author","sub_col","content_col"]
