@@ -7,8 +7,8 @@ import re
 import random
 
 def get_content(url):
-    r = requests.get(url)
-    time.sleep(random.randint(1,3))
+    time.sleep(random.uniform(1.0, 3.0))
+    r = requests.get(url, timeout=(5, 15))
     r.raise_for_status()
     soup = BeautifulSoup(r.text, "html.parser")
 
@@ -82,7 +82,7 @@ def get_content(url):
                 # 라스트 flush
 
     if not sub_col:
-        sub_col, content_col = ["nosubtitle"], [""]
+        sub_col, content_col = ["nosubtitle"], [[]]
 
     return {
         "url": url,
@@ -110,6 +110,6 @@ def build_content_df(urls):
 
 
 # 테스트
-# urls = ["https://www.itworld.co.kr/article/4050262", "https://www.itworld.co.kr/article/4050189"]
-# df = build_content_df(urls)
-# df.to_csv("test.csv", index=False, encoding="utf-8-sig")
+urls = ["https://www.itworld.co.kr/article/4050262", "https://www.itworld.co.kr/article/4050189"]
+df = build_content_df(urls)
+df.to_csv("test.csv", index=False, encoding="utf-8-sig")
