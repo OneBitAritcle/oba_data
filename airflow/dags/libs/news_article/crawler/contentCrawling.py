@@ -110,6 +110,6 @@ def build_content_df(urls):
 
 
 # 테스트
-urls = ["https://www.itworld.co.kr/article/4050262", "https://www.itworld.co.kr/article/4050189"]
-df = build_content_df(urls)
-df.to_csv("test.csv", index=False, encoding="utf-8-sig")
+# urls = ["https://www.itworld.co.kr/article/4050262", "https://www.itworld.co.kr/article/4050189"]
+# df = build_content_df(urls)
+# df.to_csv("test.csv", index=False, encoding="utf-8-sig")
