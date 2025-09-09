@@ -1,0 +1,17 @@
+# Web Crawling
+beautifulsoup4==4.13.4
+requests==2.31.0
+
+# Data Handling
+pandas==2.3.2
+numpy==2.3.2
+
+# MySQL 연동 및 ORM
+mysqlclient==2.2.4         # MySQL 드라이버
+SQLAlchemy==1.4.52         # ORM
+sqlparse==0.5.0            # SQL 파싱
+alembic==1.13.2            # DB 마이그레이션 도구
+
+# Apache Airflow
+apache-airflow[postgres,google]==2.9.3 \
+--constraint https://raw.githubusercontent.com/apache/airflow/constraints-2.9.3/constraints-3.11.txt
