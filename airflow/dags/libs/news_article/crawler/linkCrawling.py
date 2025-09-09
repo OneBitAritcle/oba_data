@@ -68,7 +68,7 @@ def get_article_link():
             for i, link in enumerate(links):
                 article_info = {
                     'category' : category_id,
-                    'article_order' : weighted_list[i],
+                    'ordering' : weighted_list[i],
                     'url' : link,
                     'crawling_time': crawling_time
                 }
