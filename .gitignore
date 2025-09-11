@@ -4,3 +4,8 @@
 .AppleDouble
 .LSOverride
 .idea
+
+# virtual environment
+.venv
+venv
+venv/

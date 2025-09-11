@@ -2,7 +2,7 @@
 CREATE DATABASE oba_article
     DEFAULT CHARACTER SET = 'utf8mb4'
 
-USE oba_article
+USE oba_article;
 
 -- 1. Articles 테이블: 수집된 모든 기사의 원본 정보를 저장
 CREATE TABLE Articles (
