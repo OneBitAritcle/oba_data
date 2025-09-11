@@ -28,23 +28,20 @@ import os
 import mysql.connector
 import datetime
 
-
-
 def get_db_connection():
     """
-    코드 내에 직접 명시된 DB 접속 정보로 MySQL DB 연결 반환
+    환경변수에서 DB 접속 정보를 읽어 MySQL DB 연결 반환
     Returns:
         MySQLConnection 객체
     """
     connect_info = {
-        'host': 'mydbinstance.cb4iuuq0kuoa.ap-southeast-2.rds.amazonaws.com',
-        'database': 'oba_article',
-        'user': 'admin',
-        'password': 'obaoba12',
-        'port': 3306
+        'host': os.environ['OBA_DB_HOST'],
+        'database': os.environ['OBA_DB_DATABASE'],
+        'user': os.environ['OBA_DB_USER'],
+        'password': os.environ['OBA_DB_PASSWORD'],
+        'port': int(os.environ.get('OBA_DB_PORT', 3306))
     }
     return mysql.connector.connect(**connect_info)
-
 
 def process_crawled_articles(crawled_articles):
     """
