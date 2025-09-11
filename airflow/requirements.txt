@@ -15,3 +15,5 @@ alembic==1.13.2            # DB 마이그레이션 도구
 # Apache Airflow
 apache-airflow[postgres,google]==2.9.3 \
 --constraint https://raw.githubusercontent.com/apache/airflow/constraints-2.9.3/constraints-3.11.txt
+
+# pendulum>=2.0, <4.0
