@@ -43,3 +43,11 @@ CREATE TABLE Selected_Articles (
     author VARCHAR(50) NOT NULL,
     publish_time VARCHAR(50) NOT NULL
 );
+
+CREATE TABLE 4checking_articles (
+    article_id BIGINT NOT NULL,
+    crawling_time DATETIME NOT NULL,
+    category_id INT NOT NULL,
+    FOREIGN KEY (article_id) REFERENCES Articles(article_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES Categories(category_id) ON DELETE CASCADE ON UPDATE CASCADE
+);

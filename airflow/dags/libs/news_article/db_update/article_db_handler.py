@@ -23,7 +23,6 @@ article_db_handler.py
     ]
 """
 
-
 import os
 import mysql.connector
 import datetime
@@ -33,6 +32,7 @@ def get_db_connection():
     환경변수에서 DB 접속 정보를 읽어 MySQL DB 연결 반환
     Returns:
         MySQLConnection 객체
+    
     """
     connect_info = {
         'host': os.environ['OBA_DB_HOST'],
@@ -78,6 +78,13 @@ def process_crawled_articles(crawled_articles):
         if url in url_to_article:
             # === 기존 기사 ===
             article_id = url_to_article[url]['article_id']
+
+            # 확인용 테이블(4checking_articles)에 추가
+            cursor.execute(
+                "INSERT 4checking_articles (article_id, crawling_time, category_id) VALUES (%s, %s, %s)",
+                (article_id, crawling_time, category_id)
+            )
+
             new_dup_cnt = url_to_article[url]['dup_cnt'] + 1 # 중복 횟수 1회 증가
 
             # ordering 누적, dup_cnt 증가
@@ -101,6 +108,13 @@ def process_crawled_articles(crawled_articles):
                 "INSERT INTO Articles (url, ordering, crawling_time, updated_time, dup_cnt, is_used) VALUES (%s, %s, %s, %s, %s, %s)",
                 (url, ordering, crawling_time, updated_time, 1, 0)
             )
+
+            # 확인용 테이블(4checking_articles)에 추가
+            cursor.execute(
+                "INSERT 4checking_articles (article_id, crawling_time, category_id) VALUES (%s, %s, %s)",
+                (article_id, crawling_time, category_id)
+            )
+
             # 새 기사를 Articles 테이블에 삽입하면, DB가 자동으로 article_id(예: AUTO_INCREMENT)를 생성
             article_id = cursor.lastrowid
             url_to_article[url] = {'article_id': article_id, 'dup_cnt': 1, 'ordering': ordering}
