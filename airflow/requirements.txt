@@ -1,4 +1,5 @@
 mysql-connector-python
+python-dotenv
 
 # Web Crawling
 beautifulsoup4==4.13.4

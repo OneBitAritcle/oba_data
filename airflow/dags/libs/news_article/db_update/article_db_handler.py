@@ -26,6 +26,8 @@ article_db_handler.py
 import os
 import mysql.connector
 import datetime
+from dotenv import load_dotenv
+load_dotenv()
 
 def get_db_connection():
     """
@@ -92,6 +94,8 @@ def process_crawled_articles(crawled_articles):
                 "UPDATE Articles SET ordering = ordering + %s, dup_cnt = %s WHERE article_id = %s",
                 (ordering, new_dup_cnt, article_id)
             )
+            
+            url_to_article[url]['dup_cnt'] = new_dup_cnt
 
             # Article_Categories 조합 없으면 추가
             if (article_id, category_id) not in existing_pairs:
@@ -109,6 +113,8 @@ def process_crawled_articles(crawled_articles):
                 (url, ordering, crawling_time, updated_time, 1, 0)
             )
 
+            article_id = cursor.lastrowid
+
             # 확인용 테이블(4checking_articles)에 추가
             cursor.execute(
                 "INSERT 4checking_articles (article_id, crawling_time, category_id) VALUES (%s, %s, %s)",
@@ -116,7 +122,6 @@ def process_crawled_articles(crawled_articles):
             )
 
             # 새 기사를 Articles 테이블에 삽입하면, DB가 자동으로 article_id(예: AUTO_INCREMENT)를 생성
-            article_id = cursor.lastrowid
             url_to_article[url] = {'article_id': article_id, 'dup_cnt': 1, 'ordering': ordering}
 
             # Article_Categories 조합 추가

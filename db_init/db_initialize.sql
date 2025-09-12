@@ -11,7 +11,7 @@ CREATE TABLE Articles (
     crawling_time DATETIME NOT NULL,
     updated_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     dup_cnt INT DEFAULT 1,
-    ordering DECIMAL NOT NULL, -- 기존 'order'에서 ordering으로 수정
+    ordering DECIMAL(10, 1) NOT NULL, -- 기존 'order'에서 ordering으로 수정
     is_used TINYINT(1) DEFAULT 0, 
     UNIQUE KEY uk_url (url(767)) -- TEXT 컬럼의 UNIQUE 제약조건을 위한 인덱스
 );
