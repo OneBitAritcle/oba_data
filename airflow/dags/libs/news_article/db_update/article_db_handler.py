@@ -99,7 +99,7 @@ def process_crawled_articles(crawled_articles):
             # === 신규 기사 ===
             cursor.execute(
                 "INSERT INTO Articles (url, ordering, crawling_time, updated_time, dup_cnt, is_used) VALUES (%s, %s, %s, %s, %s, %s)",
-                (url, ordering, crawling_time, updated_time, 1, 1)
+                (url, ordering, crawling_time, updated_time, 1, 0)
             )
             # 새 기사를 Articles 테이블에 삽입하면, DB가 자동으로 article_id(예: AUTO_INCREMENT)를 생성
             article_id = cursor.lastrowid
