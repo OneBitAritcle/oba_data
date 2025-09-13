@@ -2,7 +2,7 @@
 CREATE DATABASE oba_article
     DEFAULT CHARACTER SET = 'utf8mb4'
 
-USE oba_article
+USE oba_article;
 
 -- 1. Articles 테이블: 수집된 모든 기사의 원본 정보를 저장
 CREATE TABLE Articles (
@@ -11,7 +11,7 @@ CREATE TABLE Articles (
     crawling_time DATETIME NOT NULL,
     updated_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     dup_cnt INT DEFAULT 1,
-    ordering DECIMAL NOT NULL, -- 기존 'order'에서 ordering으로 수정
+    ordering DECIMAL(10, 1) NOT NULL, -- 기존 'order'에서 ordering으로 수정
     is_used TINYINT(1) DEFAULT 0, 
     UNIQUE KEY uk_url (url(767)) -- TEXT 컬럼의 UNIQUE 제약조건을 위한 인덱스
 );
@@ -42,4 +42,12 @@ CREATE TABLE Selected_Articles (
     content_col JSON NOT NULL,
     author VARCHAR(50) NOT NULL,
     publish_time VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE 4checking_articles (
+    article_id BIGINT NOT NULL,
+    crawling_time DATETIME NOT NULL,
+    category_id INT NOT NULL,
+    FOREIGN KEY (article_id) REFERENCES Articles(article_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES Categories(category_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
