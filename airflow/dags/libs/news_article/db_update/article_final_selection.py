@@ -12,6 +12,8 @@ article_final_selection.py
 import os
 import mysql.connector
 import json
+from dotenv import load_dotenv
+load_dotenv()
 
 # DB 연결 함수
 def get_db_connection():
@@ -50,14 +52,6 @@ def select_top5_articles():
     cursor.execute(query)
     top_articles = cursor.fetchall()
 
-    for article in top_articles:
-        # 2. is_used 업데이트
-        query = """
-            UPDATE Articles
-            SET is_used = 1
-            WHERE article_id = %s
-        """
-        cursor.execute(query, (article['article_id'],)) 
 
     # 모든 변경사항 커밋 및 연결 종료
     db_conn.commit()
@@ -78,55 +72,69 @@ def insert_content(article_id, article_content):
         "content_col": content_col,
     }을 입력받고, Selected_Articles 테이블에 업데이트한다.
     """
-    db_conn = get_db_connection()
-    cursor = db_conn.cursor(dictionary=True)
+    try: 
+        db_conn = get_db_connection()
+        cursor = db_conn.cursor(dictionary=True)
 
-    # 1. article_id 기준으로 Categories 테이블에서 이름 바로 조회 (JOIN)
-    query = """
-        SELECT c.category_name
-        FROM Article_Categories ac
-        JOIN Categories c ON ac.category_id = c.category_id
-        WHERE ac.article_id = %s
-    """
-    cursor.execute(query, (article_id,))
-    category_names = [row["category_name"] for row in cursor.fetchall()]
+        # 1. article_id 기준으로 Categories 테이블에서 이름 바로 조회 (JOIN)
+        query = """
+            SELECT c.category_name
+            FROM Article_Categories ac
+            JOIN Categories c ON ac.category_id = c.category_id
+            WHERE ac.article_id = %s
+        """
+        cursor.execute(query, (article_id,))
+        category_names = [row["category_name"] for row in cursor.fetchall()]
 
-    # 2. JSON 문자열 변환
-    categories = json.dumps(category_names, ensure_ascii=False)
+        # 2. JSON 문자열 변환
+        categories = json.dumps(category_names, ensure_ascii=False)
 
-    # 3. 백엔드에 전달할 테이블 업데이트
-    query = """
-        INSERT INTO Selected_Articles (
-            article_id, serving_date, url, category_name,
-            title, sub_col, content_col, author, publish_time
-        )
-        VALUES (%s, NOW(), %s, %s, %s, %s, %s, %s, %s)
-        ON DUPLICATE KEY UPDATE
-            serving_date = NOW(),
-            url = VALUES(url),
-            category_name = VALUES(category_name),
-            title = VALUES(title),
-            sub_col = VALUES(sub_col),
-            content_col = VALUES(content_col),
-            author = VALUES(author),
-            publish_time = VALUES(publish_time)
-    """
-    cursor.execute(query, (
-        article_id,
-        article_content["url"],
-        categories,
-        article_content["title"],
-        json.dumps(article_content.get("sub_col"), ensure_ascii=False),
-        json.dumps(article_content.get("content_col"), ensure_ascii=False),
-        article_content["author"],
-        article_content["publish_time"],
-    ))
+        # 3. 백엔드에 전달할 테이블 업데이트
+        query = """
+            INSERT INTO Selected_Articles (
+                article_id, serving_date, url, category_name,
+                title, sub_col, content_col, author, publish_time
+            )
+            VALUES (%s, NOW(), %s, %s, %s, %s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE
+                serving_date = NOW(),
+                url = VALUES(url),
+                category_name = VALUES(category_name),
+                title = VALUES(title),
+                sub_col = VALUES(sub_col),
+                content_col = VALUES(content_col),
+                author = VALUES(author),
+                publish_time = VALUES(publish_time)
+        """
+        cursor.execute(query, (
+            article_id,
+            article_content["url"],
+            categories,
+            article_content["title"],
+            json.dumps(article_content.get("sub_col"), ensure_ascii=False),
+            json.dumps(article_content.get("content_col"), ensure_ascii=False),
+            article_content["author"],
+            article_content["publish_time"],
+        ))
 
-    # 모든 변경사항 커밋 및 연결 종료
-    db_conn.commit()
-    cursor.close()
-    db_conn.close()
+        # 4. is_used 상태 업데이트
+        query = """
+            UPDATE Articles
+            SET is_used = 1
+            WHERE article_id = %s
+        """
+        cursor.execute(query, (article['article_id'],)) 
 
+    except Exception as e:
+            print(f"article_id: {article_id}에서 오류 발생. {article_content['url']}")
+            print(f"⚠️ 오류 메세지: {e}")
+            raise
+    
+    finally:
+        # 모든 변경사항 커밋 및 연결 종료
+        db_conn.commit()
+        cursor.close()
+        db_conn.close()
 
 if __name__ == "__main__":
     # 테스트용: DB 갱신 함수 실행
