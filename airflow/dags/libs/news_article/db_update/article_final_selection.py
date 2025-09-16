@@ -88,16 +88,22 @@ def insert_content(article_id, article_content):
 
         # 2. JSON 문자열 변환
         categories = json.dumps(category_names, ensure_ascii=False)
-
+        
+        # 필수 필드 검증
+        required_fields = ["url", "title","sub_col", "content_col", "author", "publish_time"]
+        for field in required_fields:
+            if not article_content.get(field):
+                raise ValueError(f"[article_id={article_id}] 필수 필드 누락: {field}")
+            
         # 3. 백엔드에 전달할 테이블 업데이트
         query = """
             INSERT INTO Selected_Articles (
                 article_id, serving_date, url, category_name,
                 title, sub_col, content_col, author, publish_time
             )
-            VALUES (%s, NOW(), %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, CURDATE(), %s, %s, %s, %s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE
-                serving_date = NOW(),
+                serving_date = CURDATE(),
                 url = VALUES(url),
                 category_name = VALUES(category_name),
                 title = VALUES(title),
@@ -108,13 +114,13 @@ def insert_content(article_id, article_content):
         """
         cursor.execute(query, (
             article_id,
-            article_content["url"],
+            article_content.get("url", ""),
             categories,
-            article_content["title"],
+            article_content.get("title", ""),
             json.dumps(article_content.get("sub_col"), ensure_ascii=False),
             json.dumps(article_content.get("content_col"), ensure_ascii=False),
-            article_content["author"],
-            article_content["publish_time"],
+            article_content.get("author", ""),
+            article_content.get("publish_time", ""),
         ))
 
         # 4. is_used 상태 업데이트
@@ -123,7 +129,9 @@ def insert_content(article_id, article_content):
             SET is_used = 1
             WHERE article_id = %s
         """
-        cursor.execute(query, (article['article_id'],)) 
+        cursor.execute(query, (article_id,)) 
+
+        db_conn.commit() # 모든 변경사항 커밋
 
     except Exception as e:
             print(f"article_id: {article_id}에서 오류 발생. {article_content['url']}")
@@ -131,8 +139,7 @@ def insert_content(article_id, article_content):
             raise
     
     finally:
-        # 모든 변경사항 커밋 및 연결 종료
-        db_conn.commit()
+        # 연결 종료
         cursor.close()
         db_conn.close()
 
