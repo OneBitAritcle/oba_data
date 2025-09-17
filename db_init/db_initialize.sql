@@ -34,7 +34,7 @@ CREATE TABLE Article_Categories (
 -- 4. Selected_Articles 테이블: 최종 선택된 기사의 스냅샷 정보 저장
 CREATE TABLE Selected_Articles (
     article_id BIGINT PRIMARY KEY,
-    serving_date DATETIME NOT NULL, -- 기존 'date'에서 serving_date로 수정
+    serving_date DATE NOT NULL, -- 기존 'date'에서 serving_date로 수정
     url TEXT NOT NULL,
     category_name JSON NOT NULL,
     title TEXT NOT NULL,
