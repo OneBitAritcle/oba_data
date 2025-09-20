@@ -10,3 +10,20 @@
 venv
 venv/
 .env
+
+# Airflow
+airflow.cfg
+airflow.db
+unittests.cfg
+webserver_config.py
+*.pid
+
+# 로그 파일
+logs/
+
+# Python 가상환경
+*.pyc
+__pycache__/
+
+# VS Code 설정 파일
+.vscode/

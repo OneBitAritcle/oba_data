@@ -11,7 +11,7 @@ numpy==2.3.2
 
 # MySQL 연동 및 ORM
 # mysqlclient==2.2.4         # MySQL 드라이버 -> 오류 발생으로 주석처리했습니다. 현재 코드까지는 필요없는 라이브러리로 판단하였으나 추후 필요하다면 다시 추가해주세요.
-SQLAlchemy==1.4.52         # ORM
+# SQLAlchemy==1.4.52         # ORM
 sqlparse==0.5.0            # SQL 파싱
 alembic==1.13.2            # DB 마이그레이션 도구
 
@@ -19,4 +19,5 @@ alembic==1.13.2            # DB 마이그레이션 도구
 apache-airflow[postgres,google]==2.9.3 \
 --constraint https://raw.githubusercontent.com/apache/airflow/constraints-2.9.3/constraints-3.11.txt
 
-# pendulum>=2.0, <4.0
+pendulum>=2.0, <4.0
+flask-limiter==3.3.1
