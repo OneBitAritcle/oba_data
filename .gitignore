@@ -27,3 +27,6 @@ __pycache__/
 
 # VS Code 설정 파일
 .vscode/
+
+# docker makefile 
+Makefile
