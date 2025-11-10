@@ -4,9 +4,10 @@
 **자동 수집, 정제, 저장, 분석**이 가능한 실시간 데이터 파이프라인을 구축합니다.
 
 ## ✨ 기술개발문서
-- [왜 AWS와 MySQL인가요?](https://www.notion.so/AWS-MySQL-265a97372b2080a99c0cefbd4fc8b0bd?source=copy_link)
+- [왜 AWS, MySQL, MongoDB를 사용했나요?](https://www.notion.so/AWS-MySQL-MongoDB-265a97372b2080a99c0cefbd4fc8b0bd?source=copy_link)
 - [사용자에게 어떤 기준으로 기사를 선정하여 제공하나요?](https://www.notion.so/264a97372b208067bc39cbf50d3b011e?source=copy_link)
-
+- [Airflow에 대하여](https://www.notion.so/Airflow-28ca97372b20801eb0f0fb1e7c67f9d2?source=copy_link)
+- [Docker에 대하여](https://www.notion.so/Docker-28ca97372b2080a584f9db7871ee2267?source=copy_link)
 
 ## 📌 Git 협업 전략
 - [Branch 전략](https://www.notion.so/Branch-25ea97372b208074adf5ff0ac7c64afe?source=copy_link)
