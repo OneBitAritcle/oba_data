@@ -53,10 +53,11 @@ CREATE TABLE Article_Categories (
 --     FOREIGN KEY (category_id) REFERENCES Categories(category_id) ON DELETE CASCADE ON UPDATE CASCADE
 -- );
 
--- 6. Backend 테이터 베이스 생성 및 데이터 베이스 선택
+-- 6. Backend 테이터 베이스 생성 
 CREATE DATABASE oba_backend
     DEFAULT CHARACTER SET = 'utf8mb4'
 
+-- 데이터 베이스 선택
 USE oba_backend;
 
 -- 7. users 테이블: 사용자 메타 데이터 저장
