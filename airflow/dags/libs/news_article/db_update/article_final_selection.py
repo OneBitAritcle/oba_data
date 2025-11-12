@@ -107,9 +107,11 @@ def insert_content(article_id, article_content):
             upsert=True
         )
 
+        serving_date = datetime.now().strftime("%Y-%m-%d")
+
         # === (2) MySQL is_used 업데이트 ===
         cursor = db_conn.cursor()
-        cursor.execute("UPDATE Articles SET is_used = 1 WHERE article_id = %s", (article_id,))
+        cursor.execute("UPDATE Articles SET is_used = 1, serving_date = %s WHERE article_id = %s", (serving_date, article_id,))
         db_conn.commit()
 
         print(f"[✅ SUCCESS] MongoDB 저장 + MySQL 업데이트 완료 (article_id={article_id})")
