@@ -4,6 +4,7 @@ make build
 
 # 컨테이너 실행
 make run
+# docker run을 실행할 때 컨테이너 내부에 airflow 로그가 자동으로 쌓이는 옵션 설정
 
 # 컨테이너 상태 확인
 make ps
@@ -19,6 +20,3 @@ make logs
 make stop
 make rm
 make clean   # 이미지까지 싹 삭제
-
------
-http://localhost:8080 접속으로 airflow ui 확인 가능
