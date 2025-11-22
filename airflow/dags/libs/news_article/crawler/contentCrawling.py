@@ -61,28 +61,81 @@ def get_content(url):
         text = text.strip()
         return (len(text) >= 60) or (text[-1:] in [".","!","?","…","다","요"])
 
-    # div(h2/p) 순회
+
+    # div(h2/p/img) 순회
     for div in content_divs:
-        for tag in div.find_all(["h2","p"]):
-            text = tag.get_text(strip=True)
-            if not text:    # 내용 없으면 넘기기
+        # h2 / p / img 순회
+        for tag in div.find_all(["h2", "p", "img", "ul", "ol"]):
+
+            # ul/ol 처리: li를 순서대로 ul_/ol_ prefix로 저장
+            if tag.name in ("ul", "ol"):
+                prefix = "<ul>" if tag.name == "ul" else "<ol>"
+                for li in tag.find_all("li", recursive=False):
+                    li_text = li.get_text(" ", strip=True)
+                    if li_text:
+                        current_paras.append(f"{prefix}{li_text}")
                 continue
-            if tag.name == "h2":    # 소제목인 경우
+
+            # 이미지 처리
+            if tag.name == "img":
+                src = tag.get("src", "").strip()
+                if src:
+                    # img_이미지링크 형태로 저장
+                    current_paras.append(f"<img>{src}")
+                continue
+
+            # --- 아래는 기존 h2/p 처리 로직 그대로 유지 ---
+            text = tag.get_text(strip=True)
+            if not text:
+                continue
+
+            # 캡션 제거
+            # <p class="imageCredit"> 등 불필요한 것 제거
+            if tag.name == "p":
+                if tag.find_parent(["ul", "ol"]) is not None:
+                    continue
+                cls = tag.get("class")
+                if cls and ("imageCredit" in cls or "caption" in cls):
+                    continue
+
+            if tag.name == "h2":
                 if not sub_col and current_sub == "nosubtitle" and not current_paras and looks_like_paragraph(text):
                     current_paras.append(text)
                     continue
-                flush()     # 지금까지 모은 문단들 하나의 섹션으로 확정
-                current_sub = text  # 새로운 소제목 시작
+
+                flush()
+                
+                current_sub = text
                 current_paras = []
-            else:  # 일반 문단일 경우
+            else:  # p 처리
                 current_paras.append(text)
-    
     
     flush()     # 반복 이후에도 마지막 소제목 밑에 문단 남아있을 수 있음
                 # 라스트 flush
 
+    # 마지막 문단에서 이메일 제거
+    email_pattern = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
+
+    # sub_col / content_col 생성 완료 후 마지막 섹션 처리
+    if content_col:
+        last_section = content_col[-1]
+        if last_section:
+            # 마지막 문단만 가져옴
+            last_para = last_section[-1]
+
+            # 만약 이메일만 있는 문단 → 제거
+            if email_pattern.fullmatch(last_para.strip()):
+                last_section.pop()
+
+            else:
+                # 문단 끝에 이메일 붙어 있는 경우 제거
+                cleaned_para = email_pattern.sub("", last_para).strip()
+
+                # 변경된 문단으로 교체
+                last_section[-1] = cleaned_para
+
     if not sub_col:
-        sub_col, content_col = ["nosubtitle"], [[]]
+        sub_col = ["nosubtitle"]
 
     return {
         "url": url,
@@ -109,7 +162,7 @@ def build_content_df(urls):
         )
 
 
-# 테스트
-# urls = ["https://www.itworld.co.kr/article/4050262", "https://www.itworld.co.kr/article/4050189"]
+# # 테스트
+# urls = ["https://www.itworld.co.kr/article/4092618"]
 # df = build_content_df(urls)
 # df.to_csv("test.csv", index=False, encoding="utf-8-sig")
