@@ -9,10 +9,15 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         tzdata ca-certificates curl unzip wget build-essential \
     && rm -rf /var/lib/apt/lists/*
+<<<<<<< HEAD
 
 ENV TZ=Asia/Seoul
 
 # (중요) root에서 airflow로 전환한 뒤 pip install 해야 함!
+=======
+
+ENV TZ=Asia/Seoul
+>>>>>>> 80d6bd9104bd2dbd985a5f091f4f6752621d10b5
 USER airflow
 
 # ======== AWS tools (S3 logging 위해 필요) ========
@@ -30,3 +35,4 @@ COPY --chown=airflow:0 airflow/dags/ /opt/airflow/dags/
 # ======== default env ========
 ENV AIRFLOW__CORE__LOAD_EXAMPLES=False
 ENV AIRFLOW__LOGGING__LOGGING_LEVEL=INFO
+
