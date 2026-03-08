@@ -4,6 +4,7 @@ from airflow.operators.python import PythonOperator
 from datetime import timedelta
 import pendulum
 
+local_tz = pendulum.timezone("Asia/Seoul")
 
 def task_select_top5_articles(**context):
     from libs.news_article.db_update.article_final_selection import select_top5_articles
@@ -18,12 +19,12 @@ def task_crawl_and_save_contents(**context):
         content = get_content(article["url"])
         insert_content(article["article_id"], content)
 
-default_args = {"owner": "airflow", "retries": 1, "retry_delay": timedelta(minutes=5)}
+default_args = {"owner": "airflow", "retries": 2, "retry_delay": timedelta(minutes=10)}
 
 with DAG(
     dag_id="select_top5_and_save_dag",
-    schedule_interval=None,
-    start_date=pendulum.datetime(2025, 9, 1, tz="Asia/Seoul"),
+    schedule_interval="0 9 * * *",
+    start_date=pendulum.datetime(2025, 9, 1, 9, 0, tz=local_tz),
     catchup=False,
     default_args=default_args,
 ) as dag:

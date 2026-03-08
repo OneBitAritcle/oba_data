@@ -20,12 +20,12 @@ def task_upsert_articles(**context):
     links = ti.xcom_pull(key="return_value", task_ids="get_article_links") # XCom에 저장된 데이터 받아오기
     process_crawled_articles(links)
 
-default_args = {"owner": "airflow", "retries": 1, "retry_delay": timedelta(minutes=5)}
+default_args = {"owner": "airflow", "retries": 2, "retry_delay": timedelta(minutes=30)}
 
 with DAG(
     dag_id="news_crawling_to_db_dag",
     schedule_interval="0 7 * * *",   # 매일 오전 7시 실행
-    start_date=pendulum.datetime(2025, 9, 1, 7, 30, tz=local_tz),
+    start_date=pendulum.datetime(2025, 9, 1, 7, 0, tz=local_tz),
     catchup=False,
     default_args=default_args,
 ) as dag:
@@ -39,11 +39,5 @@ with DAG(
         task_id="upsert_articles",
         python_callable=task_upsert_articles,
     )
-    trigger_dag2 = TriggerDagRunOperator(
-        task_id="trigger_select_top5_and_save_dag",
-        trigger_dag_id="select_top5_and_save_dag",
-        reset_dag_run=True,
-        wait_for_completion=False,
-    )
 
-    get_article_links >> upsert_articles >> trigger_dag2
+    get_article_links >> upsert_articles
