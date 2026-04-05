@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: oba_mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root1234
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker_db_initialize.sql:/docker-entrypoint-initdb.d/01_init.sql
+      - ./first_day_insertion.sql:/docker-entrypoint-initdb.d/02_categories.sql
+      - ./dummy_mysql_article.sql:/docker-entrypoint-initdb.d/03_dummy_article.sql
+      - ./dummy_mysql_backend.sql:/docker-entrypoint-initdb.d/04_dummy_backend.sql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  mongo:
+    image: mongo:7.0
+    container_name: oba_mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: OneBitArticle
+    volumes:
+      - mongo_data:/data/db
+      - ./docker_dummy_mongodb.js:/docker-entrypoint-initdb.d/01_dummy.js
+
+volumes:
+  mysql_data:
+  mongo_data:

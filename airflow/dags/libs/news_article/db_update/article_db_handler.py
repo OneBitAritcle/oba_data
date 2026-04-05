@@ -82,10 +82,10 @@ def process_crawled_articles(crawled_articles):
             article_id = url_to_article[url]['article_id']
 
             # 확인용 테이블(4checking_articles)에 추가
-            cursor.execute(
-                "INSERT 4checking_articles (article_id, crawling_time, category_id) VALUES (%s, %s, %s)",
-                (article_id, crawling_time, category_id)
-            )
+            # cursor.execute(
+            #     "INSERT INTO 4checking_articles (article_id, crawling_time, category_id) VALUES (%s, %s, %s)",
+            #     (article_id, crawling_time, category_id)
+            # )
 
             new_dup_cnt = url_to_article[url]['dup_cnt'] + 1 # 중복 횟수 1회 증가
 
@@ -116,10 +116,10 @@ def process_crawled_articles(crawled_articles):
             article_id = cursor.lastrowid
 
             # 확인용 테이블(4checking_articles)에 추가
-            cursor.execute(
-                "INSERT 4checking_articles (article_id, crawling_time, category_id) VALUES (%s, %s, %s)",
-                (article_id, crawling_time, category_id)
-            )
+            # cursor.execute(
+            #     "INSERT INTO 4checking_articles (article_id, crawling_time, category_id) VALUES (%s, %s, %s)",
+            #     (article_id, crawling_time, category_id)
+            # )
 
             # 새 기사를 Articles 테이블에 삽입하면, DB가 자동으로 article_id(예: AUTO_INCREMENT)를 생성
             url_to_article[url] = {'article_id': article_id, 'dup_cnt': 1, 'ordering': ordering}
