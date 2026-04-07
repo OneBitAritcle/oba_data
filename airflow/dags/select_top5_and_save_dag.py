@@ -19,6 +19,18 @@ def task_crawl_and_save_contents(**context):
         content = get_content(article["url"])
         insert_content(article["article_id"], content)
 
+def task_generate_gpt_results(**context):
+    import requests
+    response = requests.post(
+        "http://oba-ai:8000/generate/daily_gpt_results",
+        headers={"Content-Type": "application/json"},
+        timeout=300,
+    )
+    response.raise_for_status()
+    result = response.json()
+    print(f"[GPT] 처리 완료: {result}")
+    return result
+
 default_args = {"owner": "airflow", "retries": 2, "retry_delay": timedelta(minutes=10)}
 
 with DAG(
@@ -36,4 +48,9 @@ with DAG(
         task_id="crawl_and_save_contents",
         python_callable=task_crawl_and_save_contents,
     )
-    select_top5_articles >> crawl_and_save_contents
+    generate_gpt_results = PythonOperator(
+        task_id="generate_gpt_results",
+        python_callable=task_generate_gpt_results,
+        execution_timeout=timedelta(minutes=10),
+    )
+    select_top5_articles >> crawl_and_save_contents >> generate_gpt_results

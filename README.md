@@ -20,8 +20,4 @@
 - [그라운드 룰](https://www.notion.so/25ea97372b20807a8814ebb8c4027df1?source=copy_link)
 - [팀 코드리뷰 문화](https://www.notion.so/25ea97372b208070a67bf4a502ea9b9a?source=copy_link)
 - [기술 문서 작성법](https://www.notion.so/25ea97372b2080c1bbf3c4d2d69d3708?source=copy_link)
-
-
 ---
-
-
